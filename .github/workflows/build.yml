@@ -37,9 +37,9 @@ jobs:
       - name: Install Android SDK platform 33
         run: |
           SDKMANAGER="$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager"
-          yes | "$SDKMANAGER" --install "platforms;android-33" "build-tools;33.0.2" \
+          yes | "$SDKMANAGER" --install "platforms;android-34" "build-tools;34.0.0" \
             --sdk_root="$ANDROID_SDK_ROOT"
-          echo "SDK platform 33 ready"
+          echo "SDK platform 34 ready"
 
       - name: Cache Gradle packages
         uses: actions/cache@v4
