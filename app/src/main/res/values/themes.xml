@@ -16,6 +16,9 @@
 
 <resources>
 
+    <!-- Stub for standalone builds: AOSP defines this in Settings framework -->
+    <style name="Theme.SubSettingsBase" parent="Theme.MaterialComponents.DayNight.NoActionBar" />
+
     <style name="GameSpaceTheme" parent="Theme.SubSettingsBase" />
 
     <style name="GameSpaceTheme.GameBar" parent="Theme.SubSettingsBase">
