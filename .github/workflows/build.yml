@@ -33,6 +33,12 @@ jobs:
           distribution: temurin
           cache: gradle
 
+      - name: Install Android SDK platform 33
+        run: |
+          sdkmanager --install "platforms;android-33" "build-tools;33.0.2" \
+            --sdk_root=$ANDROID_SDK_ROOT
+          echo "SDK platform 33 ready"
+
       - name: Cache Gradle packages
         uses: actions/cache@v4
         with:
@@ -60,8 +66,7 @@ jobs:
         run: |
           ./gradlew assembleRelease \
             --stacktrace \
-            --no-daemon \
-            -Pandroid.builder.sdkDownload=false
+            --no-daemon
 
       - name: Rename APK
         id: apk
