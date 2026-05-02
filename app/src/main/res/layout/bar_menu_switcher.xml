@@ -12,7 +12,7 @@
         android:layout_gravity="center"
         android:drawableTop="@drawable/ic_arrow_left"
         android:minEms="3"
-        android:fontFamily="@*android:string/config_headlineFontFamilyMedium"
+        android:fontFamily="sans-serif-medium"
         android:textAlignment="center"
         android:textColor="@color/barButtonAccent"
         android:textSize="14sp"
