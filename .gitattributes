@@ -1,0 +1,12 @@
+# Git LFS — large binary files
+# Run once after cloning:  git lfs install
+#
+# GitHub Free/Pro/Teams plans include 1 GB LFS storage + 1 GB/month bandwidth.
+# Upgrade storage/bandwidth at https://github.com/settings/billing
+
+# Android framework prebuilt (≈41 MB)
+prebuilts/*.jar   filter=lfs diff=lfs merge=lfs -text
+
+# Keystore (binary, already committed — track via LFS going forward)
+**/*.jks          filter=lfs diff=lfs merge=lfs -text
+**/*.keystore     filter=lfs diff=lfs merge=lfs -text

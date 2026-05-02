@@ -1,0 +1,103 @@
+name: Build GameSpace
+
+on:
+  push:
+    branches: [ main, master, "15.0" ]
+    tags:     [ "v*.*.*" ]
+  pull_request:
+    branches: [ main, master, "15.0" ]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  JAVA_VERSION: "17"
+
+jobs:
+  build:
+    name: Build & Sign APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: temurin
+          cache: gradle
+
+      - name: Cache Gradle packages
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: gradle-${{ runner.os }}-
+
+      - name: Make gradlew executable
+        run: chmod +x gradlew
+
+      - name: Resolve version name
+        id: version
+        run: |
+          if [[ "${GITHUB_REF}" == refs/tags/v* ]]; then
+            VERSION="${GITHUB_REF_NAME#v}"
+          else
+            VERSION="$(git describe --tags --always --dirty 2>/dev/null || echo "${GITHUB_SHA::8}")"
+          fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "Version: $VERSION"
+
+      - name: Build release APK
+        run: |
+          ./gradlew assembleRelease \
+            --stacktrace \
+            --no-daemon \
+            -Pandroid.builder.sdkDownload=false
+
+      - name: Rename APK
+        id: apk
+        run: |
+          SRC=$(find app/build/outputs/apk/release -name "*.apk" | head -1)
+          if [ -z "$SRC" ]; then
+            echo "ERROR: No APK found after build."
+            exit 1
+          fi
+          DEST="app/build/outputs/apk/release/GameSpace-${{ steps.version.outputs.version }}.apk"
+          mv "$SRC" "$DEST"
+          echo "apk_path=$DEST" >> "$GITHUB_OUTPUT"
+          echo "apk_name=$(basename "$DEST")" >> "$GITHUB_OUTPUT"
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.apk.outputs.apk_name }}
+          path: ${{ steps.apk.outputs.apk_path }}
+          retention-days: 30
+          if-no-files-found: error
+
+      - name: Create GitHub Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          name: "GameSpace ${{ steps.version.outputs.version }}"
+          tag_name: ${{ github.ref_name }}
+          files: ${{ steps.apk.outputs.apk_path }}
+          generate_release_notes: true
+          draft: false
+          prerelease: >-
+            ${{
+              contains(github.ref_name, '-alpha') ||
+              contains(github.ref_name, '-beta')  ||
+              contains(github.ref_name, '-rc')
+            }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,0 +1,15 @@
+*.iml
+.gradle
+/local.properties
+/key.properties
+/.idea
+.DS_Store
+/build
+/captures
+.externalNativeBuild
+.cxx
+local.properties
+/app/release
+/magisk*
+# prebuilts/ and SettingsLib/ are intentionally tracked (see .gitattributes for LFS)
+/gradlew.bat

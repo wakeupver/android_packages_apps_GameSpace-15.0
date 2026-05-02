@@ -1,0 +1,27 @@
+/*
+ * Minimal SettingsLib stub module.
+ *
+ * All preference implementation classes (CustomSeekBarPreference, SystemSettingListPreference,
+ * etc.) are already compiled inside the :app module at
+ *   app/src/main/java/com/crdroid/settings/preferences/
+ *
+ * This module exists solely to satisfy the Gradle project dependency declared in
+ * app/build.gradle:  implementation project(path: ':SettingsLib')
+ * and settings.gradle: include ':SettingsLib'
+ *
+ * For AOSP/Soong builds the equivalent is the Android.bp `SettingsLibDefaults` + `LineagePreferenceLib`.
+ */
+plugins {
+    id 'com.android.library'
+}
+
+android {
+    compileSdk 33
+    namespace 'com.android.settingslib'
+
+    defaultConfig {
+        minSdk 33
+    }
+
+    // No sources — the stub is intentionally empty.
+}
